@@ -47,7 +47,8 @@ change variables in file:
 
 especially dowload url.
 
-## Trainig
+## Training 
+
 
 User login to specific realm user url:
 

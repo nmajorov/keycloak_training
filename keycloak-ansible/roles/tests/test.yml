@@ -1,0 +1,17 @@
+---
+
+- hosts: all
+  become: true
+  tasks:
+
+      - name: check if localhost set correctly
+        shell: cp /etc/hosts /etc/hosts_backup-$(/bin/date +%d-%m-%Y-%H-%M-%S)
+
+
+      - name: check hosts files
+        lineinfile:
+          dest: /etc/hosts
+          #regexp: '^127\.0\.0\.1'
+          line: '127.0.0.1 localhost'
+          insertafter: EOF
+          state: present

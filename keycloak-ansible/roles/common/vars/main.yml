@@ -1,0 +1,16 @@
+---
+
+# variables
+version: 3.1.0.Final
+
+install_dir: /usr/share/keycloak
+
+#download-uri: https://downloads.jboss.org
+
+download_uri: http://10.42.0.1/~nmajorov/
+
+# keycloak parameters
+
+KEYCLOAK_ADMIN: admin
+
+KEYCLOAK_ADMIN_PWD: Basel2016

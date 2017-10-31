@@ -1,0 +1,8 @@
+---
+
+- name: Install keycloak
+  hosts: "{{ target_host }}"
+  become: true
+  become_method: sudo
+  roles:
+      - common

@@ -1,0 +1,31 @@
+language: java
+
+jdk:
+  - oraclejdk8
+
+cache:
+  directories:
+    - $HOME/.m2
+
+before_cache:
+  - rm -rf $HOME/.m2/repository/org/keycloak/quickstarts
+
+env:
+  global:
+    - MAVEN_SKIP_RC=true
+    - MAVEN_OPTS="-Xms512m -Xmx2048m"
+
+before_install:
+  - ./scripts/start-server.sh
+
+install:
+  - mvn clean install -Pwildfly-managed -Denforcer.skip=true
+
+script:
+  - mvn -Pwildfly-managed -Denforcer.skip=true clean verify -q
+
+after_install:
+  - ./scripts/stop-server.sh
+  - kill -9 `cat pid.txt`
+
+sudo: false

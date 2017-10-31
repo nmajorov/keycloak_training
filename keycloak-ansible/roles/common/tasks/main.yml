@@ -1,0 +1,75 @@
+---
+
+
+- debug: msg="Ansible OS family {{ ansible_os_family }}"
+
+- name:  install dnf packages
+  dnf:
+   name: "{{ item }}"
+   state: present
+
+  with_items:
+   - zip
+   - unzip
+   - java-1.8.0-openjdk-devel.x86_64
+   - ntp
+
+- name:  Set server timezone
+  command: "timedatectl set-timezone Europe/Berlin"
+  notify: restart ntp service
+
+
+- name: download keycloack
+  get_url:
+    url: "{{ download_uri }}/keycloak/{{ version }}/keycloak-{{ version }}.zip"
+    dest: /tmp/keycloak-{{ version }}.zip
+
+- name: Extract archive
+  unarchive: dest=/usr/share/  src=/tmp/keycloak-{{ version }}.zip copy=no
+
+- name: Create system link and systemd directory
+  file: src={{ install_dir }}-{{ version }} dest={{ install_dir }} state=link
+  #create a directory if it doesn't exist
+- file: path="{{ install_dir }}/bin/systemd" state=directory
+
+
+- name: Add group "jboss"
+  group: name=jboss
+
+- name: Add user "jboss"
+  user:
+    name=jboss
+    group=jboss
+    home=/usr/share/jboss
+
+
+- name: Copy start scripts
+  copy: src=keycloak-init.sh dest="{{ install_dir }}/bin/systemd/keycloak-init.sh" mode=0755
+- template: src=keycloak.service.j2 dest=/usr/lib/systemd/system/keycloak.service
+
+- name: Change ownership of JBoss installation
+  file: path="/usr/share/{{item.src}}" owner=jboss group=jboss state=directory recurse=yes
+  with_items:
+    - {src: 'keycloak-{{ version }}'}
+
+
+- name: enable keyloack service
+  systemd:
+    name: keycloak
+    enabled: yes
+    masked: no
+
+- name: check hosts files
+  lineinfile:
+    dest: /etc/hosts
+    #regexp: '^127\.0\.0\.1'
+    line: '127.0.0.1 localhost'
+    insertafter: EOF
+    state: present
+
+    #- name: enable sso eap admin user 
+    #command: "{{ install_dir }}/bin/add-user.sh -u {{ KEYCLOAK_ADMIN }} -p {{ KEYCLOAK_ADMIN_PWD }} -"
+
+- name: enable keycloak admin
+  command: "{{ install_dir }}/bin/add-user-keycloak.sh -r master  -u {{ KEYCLOAK_ADMIN }} -p {{ KEYCLOAK_ADMIN_PWD }}"
+  notify: start keycloak service

@@ -1,0 +1,42 @@
+---
+# Uninstall sso
+#
+- hosts: "{{ target_host }}"
+  become: true
+ 
+    
+  tasks:
+      
+      - name: stop and disable  service
+        service: 
+         name: keycloak
+         state: stopped
+         enabled: no
+         daemon_reload: yes
+  
+      - name: Include variables
+        include_vars:
+         dir: 'roles/common/vars'
+        
+      - name: remove jboss user
+        user:
+         name: jboss
+         group: jboss
+         state: absent
+
+      - name: remove redhat sso installation
+        file:
+         path:  /usr/share/keycloak-{{full_version}}
+         state: absent
+    
+      - name: remove file links
+        file:
+          path:  "{{ install_dir }}"
+          state: absent
+       
+      - name: remove downloads
+        file:
+         path: /tmp/keycloak-{{ full_version }}.zip
+         state: absent
+        
+        

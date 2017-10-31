@@ -1,0 +1,11 @@
+- name: start keycloak service
+  systemd:
+    name: keycloak
+    state: restarted
+    enabled: True
+
+- name: restart ntp service
+  systemd:
+    name: ntpd
+    state: restarted
+    enabled: True

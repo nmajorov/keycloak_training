@@ -1,0 +1,12 @@
+{
+    "clientId": "app-html5",
+    "rootUrl": "http://10.42.0.1:8080/app-html5",
+    "enabled": true,
+    "redirectUris": [
+        "http://10.42.0.1:8080/app-html5/*"
+    ],
+    "webOrigins": [
+        "http://10.42.0.1:8080"
+    ],
+    "publicClient": true
+}

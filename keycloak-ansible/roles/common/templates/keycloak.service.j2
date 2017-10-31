@@ -1,0 +1,22 @@
+#
+# {{ ansible_managed }}
+#
+
+[Unit]
+Description=keycloak
+After=network.target remote-fs.target nss-lookup.target
+
+[Service]
+Type=forking
+Environment=STARTUP_WAIT=800
+Environment=SHUTDOWN_WAIT=600
+ExecStart={{ install_dir }}/bin/systemd/keycloak-init.sh {{ install_dir }} jboss  standalone start
+ExecStop={{ install_dir }}/bin/systemd/keycloak-init.sh  {{ install_dir }} jboss  standalone stop
+PIDFile={{ install_dir }}/keycloack.pid
+User=jboss
+Group=jboss
+TimeoutStartSec=800
+TimeoutStopSec=600
+
+[Install]
+WantedBy=multi-user.target
